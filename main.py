@@ -1,29 +1,48 @@
-#subsequence co k phan tu voi tong nho nhat
-def minSubsequence(nums, k):
-    arr = [(nums[i], i) for i in range(len(nums))]
-    arr.sort()
-
-    arr = arr[:k]
-    arr.sort(key=lambda k: k[1])
-
-    return [val[1] for val in arr]
-#check target co o trong list nums khong
-def checkExist(nums, target):
-    return target in nums
-
-def softWare():  
-    with open('INP.txt', 'r') as f: 
-        lines = f.readlines()
+def generateBinary(length, bArr):
+    if length == n: 
+        calcTime(bArr) 
+        return
+    else: 
+        bArr[length] = 0
+        generateBinary(length + 1, bArr) 
+        bArr[length] = 1
+        generateBinary(length + 1, bArr)
     
-    works = int(lines[0])
-    list_ = []
-    for i in range(1, len(lines)):
-        line = lines[i].split(' ')
-        for j in range(works):
-            list_.append(int(line[j])
+def calcTime(bArr): 
+    t1, t2 = 0, 0 
+    for i in range(n): 
+        if bArr[i] == 0:
+            t1 += arr1[i]
+        else: 
+            t2 += arr2[i]
     
-    print(minSubsequence(list_, works))
-def main():
-  softWare()
+    tg = max(t1, t2) 
+    res = bArr.copy()
+    dic.append((tg, res))
 
-main()
+def xuli(arr): 
+    a1, a2 = [], []
+    for i in range(n): 
+        if arr[i] == 0: 
+            a1.append(i + 1)
+        else: 
+            a2.append(i + 1)
+    return a1, a2
+
+with open('INP.txt', 'r') as f: 
+    lines = f.readlines()
+    
+n = int(lines[0])
+arr1 = [int(i) for i in lines[1].split(' ')]
+arr2 = [int(i) for i in lines[2].split(' ')]
+
+arr = n * [0]
+dic = []
+generateBinary(0, arr)
+dic.sort(key = lambda k:k[0])
+val = dic[0]
+
+min_tg = val[0]
+p_works, c_works = xuli(val[1]) 
+
+print('{} \n{} {}'.format(min_tg, p_works, c_works))
