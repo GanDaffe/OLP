@@ -15,6 +15,17 @@ class Students:
     def __str__(self):
         s = "Ten: %s\nMa sinh vien: %s\nQue quan: %s \nDiem TB: %.2f" %(self.name, self.msv, self.que_quan, self.diem_tb) 
         return s
+    
+def chuan_hoa(ten):
+    t = ten.strip().split(' ')
+    if len(t) < 2: 
+        return ten.capitalize()
+    
+    res = t[0].capitalize()
+    for i in range(1, len(t)): 
+        res += ' ' + t[i].capitalize()
+            
+    return res
 
 def printList(list_):
     if list_ == []:
@@ -23,41 +34,42 @@ def printList(list_):
         for att in list_:
             print(att)
             print('--------------')
-        
-with open("DiemThi.txt") as f: 
-    lines = f.readlines()
 
-n, k = int(lines[0].split(' ')[0]), int(lines[0].split(' ')[1])
+n, k = int(input('Nhap so sinh vien: ')), int(input('Nhap so mon hoc: '))
+input()
 
 class_ = []
-for i in range(1, n + 1):
-    line = lines[i].split(';')
+for i in range(n):
     sv = Students(None, None, None, [])
     
-    setattr(sv, 'name', line[0])
-    setattr(sv, 'msv', line[1])
-    setattr(sv, 'que_quan', line[2])
-        
-    diem = [float(idx) for idx in line[3].split(' ')]
+    setattr(sv, 'name', chuan_hoa(input('Nhap ten: ')))
+    setattr(sv, 'msv', input('Nhap ma sinh vien: '))
+    setattr(sv, 'que_quan', chuan_hoa(input('Nhap que quan: ')))
+    
+    diem = []
+    for j in range(k):
+        diem.append(float(input(f'Nhap diem mon thu {j + 1}: ')))
+    
     setattr(sv, 'diem_mon', diem)
-        
     class_.append(sv)
+    
+    print('-------------')
 
-for st in class_: 
-    setattr(st, 'diem_tb', sum(getattr(st, 'diem_mon')) / k)
-
+for sv in class_:
+    setattr(sv, 'diem_tb', sum(getattr(sv, 'diem_mon')) / k)
+    
 dict_ = {}
-dict_['Gioi'] = list(filter(lambda sv: getattr(sv, 'diem_tb') >= 8, class_))
-dict_['Kha'] = list(filter(lambda sv: sv.diem_tb >= 6.5, [s for s in class_ if s not in dict_['Gioi']]))
-dict_['Trung Binh'] = list(filter(lambda sv: sv.diem_tb >= 5, [s for s in class_ if s not in dict_['Gioi'] and s not in dict_['Kha']]))
+dict_['Gioi'] = [sv for sv in class_ if getattr(sv, 'diem_tb') >= 8.0]
+dict_['Kha'] = [sv for sv in class_ if getattr(sv, 'diem_tb') >= 6.5 and getattr(sv, 'diem_tb') < 8]
+dict_['Trung Binh'] = [sv for sv in class_ if getattr(sv, 'diem_tb') >= 5.0 and getattr(sv, 'diem_tb') < 6]
 dict_['Kem'] = [sv for sv in class_ if sv not in dict_['Gioi'] and sv not in dict_['Kha'] and sv not in dict_['Trung Binh']]
 
-hn_good = list(filter(lambda sv: getattr(sv, 'diem_tb') >= 8 and getattr(sv, 'que_quan') == 'Ha Noi', dict_['Gioi']))
+hn_good = [sv for sv in dict_['Gioi'] if getattr(sv, 'que_quan') == 'Ha Noi']
 
-for key, values in dict_.items(): 
-    print("Nhung hoc sinh co hoc luc", key.upper(), ": ")
-    printList(values)
+for key, val in dict_.items(): 
+    print('Nhung sinh vien co hoc luc ', key.upper(), ': ')
+    printList(val)
     input()
-
-print("Nhung sinh vien co hoc luc gioi o Ha Noi: ") 
+    
+print('Nhung hoc sinh co hoc luc GIOI o Ha Noi: ')
 printList(hn_good)
