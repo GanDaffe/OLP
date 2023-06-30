@@ -1,75 +1,103 @@
-class Students: 
-    name = ""
-    msv = ""
-    que_quan = ""
-    diem_mon = []
-    diem_tb = 0.0
-    
-    def __init__(self, name, msv, que_quan, diem_mon): 
+class Student: 
+    tag = 1
+    def __init__(self, name, que_quan, diem_thi = []): 
         self.name = name
-        self.msv = msv
+        self.sid = f'%03d' %(Student.tag) 
         self.que_quan = que_quan 
-        self.diem_mon = diem_mon.copy()
-        self.diem_tb = 0.0
-                
-    def __str__(self):
-        s = "Ten: %s\nMa sinh vien: %s\nQue quan: %s \nDiem TB: %.2f" %(self.name, self.msv, self.que_quan, self.diem_tb) 
-        return s
+        self.diem_thi = diem_thi
+        self.hoc_luc = ''
+        Student.tag += 1
+        
+    def __str__(self): 
+        return f'Ten: %s\nMSV: %s\nQue quan: %s' %(self.name, self.sid, self.que_quan)
     
-def chuan_hoa(ten):
-    t = ten.strip().split(' ')
-    if len(t) < 2: 
-        return ten.capitalize()
+    def set_hoc_luc(self, hoc_luc): 
+        self.hoc_luc = hoc_luc
+        
+class Manager: 
+    def __init__(self,n = 1 , k = 1, students = []):
+        self.students = students
+        self.n = n 
+        self.k = k
     
-    res = t[0].capitalize()
-    for i in range(1, len(t)): 
-        res += ' ' + t[i].capitalize()
+    def input(self):
+        for i in range(self.n):
+            name = input('Nhap ten: ')
+            que_quan = input('Nhap que quan: ')
             
-    return res
+            ok = False
+            while not ok: 
+                diem_thi = input('Nhap diem cac mon, cach nhau 1 khoang trong: ')
+                dem = 0
+                for c in diem_thi.split(' '):
+                    if c.isdigit(): 
+                        dem += 1                
+                if dem == k:
+                    ok = True
+                else:
+                    print(f'Vui long nhap {k} diem!')
+        
+            sv = Student(chuan_hoa(name), chuan_hoa(que_quan), [float(i) for i in diem_thi.strip().split(' ')])
+            self.students.append(sv)
+            print('----------------')
+    
+    def chuan_hoa(str_arg):
+        t = str_arg.strip().split(' ')
+        if len(t) < 2: 
+            return str_arg.capitalize()
 
-def printList(list_):
+        res = t[0].capitalize()
+        for i in range(1, len(t)): 
+            res += ' ' + t[i].capitalize()
+
+        return res
+    
+    def get_students(self):
+        return self.students
+    
+def printList(list_): 
     if list_ == []:
-        print("Khong co!")
+        print('Khong co!')
     else:
-        for att in list_:
-            print(att)
-            print('--------------')
-
-n, k = int(input('Nhap so sinh vien: ')), int(input('Nhap so mon hoc: '))
-input()
-
-class_ = []
-for i in range(n):
-    sv = Students(None, None, None, [])
-    
-    setattr(sv, 'name', chuan_hoa(input('Nhap ten: ')))
-    setattr(sv, 'msv', input('Nhap ma sinh vien: '))
-    setattr(sv, 'que_quan', chuan_hoa(input('Nhap que quan: ')))
-    
-    diem = []
-    for j in range(k):
-        diem.append(float(input(f'Nhap diem mon thu {j + 1}: ')))
-    
-    setattr(sv, 'diem_mon', diem)
-    class_.append(sv)
-    
-    print('-------------')
-
-for sv in class_:
-    setattr(sv, 'diem_tb', sum(getattr(sv, 'diem_mon')) / k)
-    
-dict_ = {}
-dict_['Gioi'] = [sv for sv in class_ if getattr(sv, 'diem_tb') >= 8.0]
-dict_['Kha'] = [sv for sv in class_ if getattr(sv, 'diem_tb') >= 6.5 and getattr(sv, 'diem_tb') < 8]
-dict_['Trung Binh'] = [sv for sv in class_ if getattr(sv, 'diem_tb') >= 5.0 and getattr(sv, 'diem_tb') < 6]
-dict_['Kem'] = [sv for sv in class_ if sv not in dict_['Gioi'] and sv not in dict_['Kha'] and sv not in dict_['Trung Binh']]
-
-hn_good = [sv for sv in dict_['Gioi'] if getattr(sv, 'que_quan') == 'Ha Noi']
-
-for key, val in dict_.items(): 
-    print('Nhung sinh vien co hoc luc ', key.upper(), ': ')
-    printList(val)
+        for i in list_:
+            print(i)
+            print('----------')
     input()
     
-print('Nhung hoc sinh co hoc luc GIOI o Ha Noi: ')
-printList(hn_good)
+if __name__ == '__main__':
+    ok = False
+    while not ok: 
+        try: 
+            n, k = int(input('Nhap so sinh vien: ')), int(input('Nhap so mon hoc: '))
+            ok = True
+        except ValueError: 
+            print('Not OK')
+            
+    m = Manager(n, k)
+    m.input()
+    
+    for sv in m.get_students(): 
+        ave = sum(getattr(sv, 'diem_thi')) / k
+        if ave >= 8.0:
+            sv.set_hoc_luc('Gioi')
+        elif ave >= 6.5:
+            sv.set_hoc_luc('Kha')
+        elif ave >= 5.0:
+            sv.set_hoc_luc('Trung Binh')
+        else: 
+            sv.set_hoc_luc('Kem')
+        
+    print('Nhung hoc sinh co hoc luc gioi: ')
+    printList(list(filter(lambda sv: getattr(sv, 'hoc_luc') == 'Gioi', m.get_students())))
+    
+    print('Nhung hoc sinh co hoc luc kha: ') 
+    printList(list(filter(lambda sv: getattr(sv, 'hoc_luc') == 'Kha', m.get_students())))
+    
+    print('Nhung hoc sinh co hoc luc trung binh: ')
+    printList(list(filter(lambda sv: getattr(sv, 'hoc_luc') == 'Trung Binh', m.get_students())))
+    
+    print('Nhung hoc sinh co hoc luc kem: ')
+    printList(list(filter(lambda sv: getattr(sv, 'hoc_luc') == 'Kem', m.get_students())))
+    
+    print('Nhung hoc sinh co hoc luc gioi o ha noi: ')
+    printList(list(filter(lambda sv: getattr(sv, 'hoc_luc') == 'Gioi' and getattr(sv, 'que_quan') == 'Ha Noi', m.get_students())))
